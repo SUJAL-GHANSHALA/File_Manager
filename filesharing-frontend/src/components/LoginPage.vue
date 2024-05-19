@@ -73,9 +73,15 @@ export default {
         }
 
         const data = await response.json();
+
+        // Store token in a cookie with expiry time of 7 days
+
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 7); // Expires in 7 days
+        document.cookie = `token=${data.token}; expires=${expiryDate.toUTCString()}; path=/`;
+        
         alert("Login successful");
         this.$router.push({ name: 'Home' });
-        console.log('User logged in:', data);
       } catch (error) {
         alert("Invalid credentials");
         console.error('Login error:', error);

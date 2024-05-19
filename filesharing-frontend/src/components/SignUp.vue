@@ -101,6 +101,11 @@ export default {
         }
 
         const data = await response.json();
+
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 7); // Expires in 7 days
+        document.cookie = `token=${data.token}; expires=${expiryDate.toUTCString()}; path=/`;
+        
         alert("success");
         console.log('User registered:', data);
         this.$router.push({ name: 'Home' });

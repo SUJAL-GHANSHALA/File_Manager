@@ -68,11 +68,15 @@
             </div>
         </div>
     </div>
+    <CreateFolder/>
+    <ManageAccess/>
     <RightSection/>
 </template>
 
 <!-- js here -->
 <script>
+import ManageAccess from './ManageAccess.vue';
+import CreateFolder from './CreateFolder.vue';
 import RightSection from '../RightSection/RightSection.vue';
 import TablePage from './TablePage.vue';
 
@@ -80,7 +84,9 @@ export default {
   name: "MiddleSection",
   components: {
         TablePage,
-        RightSection
+        RightSection,
+        CreateFolder,
+        ManageAccess
     },
   data() {
     return {
