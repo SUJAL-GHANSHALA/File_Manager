@@ -13,15 +13,20 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // Authentication passed...
+            // authentication passed...
             $user = Auth::user();
+
+            // storing user id in token
+            $token = $user->createToken('MyApp', ['user_id' => $user->id])->plainTextToken;
+            
             return response()->json([
                 'message' => 'Login successful',
                 'user' => $user,
+                'token' => $token
             ], 200);
         }
 
-        // Authentication failed
+        // authentication failed
         return response()->json([
             'message' => 'Invalid credentials',
         ], 401);

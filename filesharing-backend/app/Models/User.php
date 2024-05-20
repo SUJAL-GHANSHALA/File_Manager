@@ -42,4 +42,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function folders()
+    {
+        return $this->hasMany(Folder::class)
+                    ->whereNull('parent_id');
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class)->whereNull('folder_id');
+    }
 }

@@ -1,41 +1,50 @@
-<!-- CreateFolder.vue -->
 <template>
-    <div v-if="showPopup" class="popup">
-      <div class="popup-content">
-        <h2>Create New Folder</h2>
-        <input type="text" v-model="folderName" placeholder="Folder Name">
-        <button @click="createFolder">Create</button>
-        <button @click="showPopup = false">Cancel</button>
-      </div>
+  <div v-if="showPopup" class="popup">
+    <div class="popup-content">
+      <h2>Create New Folder</h2>
+      <input type="text" v-model="folderName" placeholder="Folder Name">
+      <button @click="createFolder">Create</button>
+      <button @click="cancelCreateFolder">Cancel</button> <!-- Add click event handler -->
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'CreateFolder',
-    data() {
-      return {
-        showPopup: false,
-        folderName: ''
-      };
-    },
-    methods: {
-      createFolder() {
-        if (this.folderName) {
-          alert(`Folder '${this.folderName}' created!`);
-          this.sendDataToBackend();
-          this.folderName = '';
-          this.showPopup = false;
-        } else {
-          alert('Please enter a folder name.');
-        }
-      },
-      sendDataToBackend() {
-        // function to send data to backend
-      }
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'CreateFolder',
+  data() {
+    return {
+      folderName: ''
+    };
+  },
+  computed: {
+    showPopup() {
+      return this.$store.state.showCreateFolderPopup; // Access showCreateFolderPopup from Vuex store
     }
-  };
-  </script>
+  },
+  methods: {
+    createFolder() {
+      if (this.folderName) {
+        alert(`Folder '${this.folderName}' created!`);
+        this.sendDataToBackend();
+        this.folderName = '';
+        this.hidePopup(); // hide the component after creating the folder
+      } else {
+        alert('Please enter a folder name.');
+      }
+    },
+    cancelCreateFolder() {
+      this.hidePopup(); // hide the component when "Cancel" button is clicked
+    },
+    hidePopup() {
+      this.$store.dispatch('hideCreateFolderPopup'); // Dispatch action to hide CreateFolder component
+    },
+    sendDataToBackend() {
+      // function to send data to backend
+    }
+  }
+};
+</script>
   
   <style scoped>
   body {

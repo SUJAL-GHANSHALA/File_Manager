@@ -8,7 +8,7 @@
 
         <div class="add-folder">
             <div class="add-folder2">
-                <div class="add addfolder">
+                <div class="add addfolder" @click ="toggleCreateFolder">
                     <p>Add Folder</p>
                 </div>
                 <div class="add addfile">
@@ -68,6 +68,7 @@
 
 <!-- js here -->
 <script >
+    // import {bus} from '../../eventbus.js';
     // import { ref } from 'vue';
     export default {
         name: 'LeftSection',
@@ -86,7 +87,13 @@
                     alert("sujal");
                     console.log(file.name);
                 }
+            },
+            toggleCreateFolder() {
+                this.$store.dispatch('toggleCreateFolderPopup');
             }
+            // busevent(){
+            //     bus.$emit("thisisanevent");
+            // }
         }
     }
 </script>

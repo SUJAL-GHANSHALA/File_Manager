@@ -21,14 +21,11 @@
                     <div class="profile-name">
                         <p>Sujal</p>
                     </div>
-                    <div class="profile-icon">
+                    <div class="profile-icon" @click="toggleProfileDropdown">
                         <img src="../../assets/profileicon.png" alt="">
                     </div>
                     <!-- profile hidden starts -->
-                    <!-- <div class="profile-hidden">
-                        <a href="#">Edit Profile</a>
-                        <a href="#">Logout</a>
-                    </div> -->
+                    <ProfileDropdown :isVisible="showProfileDropdown" />
                     <!-- profile hidden ends -->
                 </div>
             </div>
@@ -68,17 +65,22 @@
             </div>
         </div>
     </div>
-    <CreateFolder/>
-    <ManageAccess/>
+    <CreateFolder v-if="showCreateFolderPopup"/>
+    <ManageAccess :fileName="'sujal.mp3'"/>
     <RightSection/>
 </template>
 
 <!-- js here -->
 <script>
+// import {bus} from '../../eventbus.js';
+
+import ProfileDropdown  from './ProfileDropdown.vue';
 import ManageAccess from './ManageAccess.vue';
 import CreateFolder from './CreateFolder.vue';
 import RightSection from '../RightSection/RightSection.vue';
 import TablePage from './TablePage.vue';
+import { mapState, mapActions } from 'vuex';
+
 
 export default {
   name: "MiddleSection",
@@ -86,21 +88,33 @@ export default {
         TablePage,
         RightSection,
         CreateFolder,
-        ManageAccess
+        ManageAccess,
+        ProfileDropdown
     },
-  data() {
-    return {
-    //   plus02: require('../../assets/plus02.png'), 
-      imageIcon: require('../../assets/imageIcon.png'), 
-      dummyImage: require('../../assets/dummyrecentImage.png'), 
-      recentItems: [
-        { title: 'sujal' },
-        { title: 'sujal' },
-        { title: 'sujal' },
-        { title: 'sujal' }
-      ],
-    };
-  }
+    data() {
+        return {
+        //   plus02: require('../../assets/plus02.png'), 
+        imageIcon: require('../../assets/imageIcon.png'), 
+        dummyImage: require('../../assets/dummyrecentImage.png'), 
+        recentItems: [
+            { title: 'sujal' },
+            { title: 'sujal' },
+            { title: 'sujal' },
+            { title: 'sujal' }
+        ],
+        };
+    },
+    computed: {
+        ...mapState(['showCreateFolderPopup', 'showProfileDropdown']), 
+    },
+    methods: {
+        ...mapActions(['toggleProfileDropdown'])
+    }
+    // created(){
+    //     bus.$on('thisisanevent',() => {
+    //         alert("sujal");
+    //     });
+    // }
 };
 </script>
 

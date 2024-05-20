@@ -62,43 +62,38 @@ const handleimageclick = (data) => {
 
 <template>
   <div class="table-page">
-    <table class="assets-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Size</th>
-          <th>Type</th>
-          <th>Modified</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="asset in assets" :key="asset.id">
-          <td>{{ asset.name }}</td>
-          <td>{{ asset.size }}</td>
-          <td>{{ asset.type }}</td>
-          <td>{{ asset.modified }}</td>
-          <td>
-            <img :src="optionsIcon" @click="showOptions(asset)" class="option-button" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-if="selectedAsset" class="asset-card">
-      <div class="card-header">
-        <h3>{{ selectedAsset.name }}</h3>
-        <button @click="closeCard">X</button>
-      </div>
-      <ul>
-        <li><button @click="previewAsset">Preview</button></li>
-        <li><button @click="downloadAsset">Download</button></li>
-        <li><button @click="renameAsset">Rename</button></li>
-        <li><button @click="addToStarred">Add to Starred</button></li>
-        <li><button @click="addTags">Add Tags</button></li>
-        <li><button @click="moveAsset">Move</button></li>
-        <li><button @click="moveToTrash">Move to Trash</button></li>
-        <li><button @click="viewDetails">Details</button></li>
-      </ul>
+    <div v-if="isLoading">
+      Loading...
+    </div>
+    <div v-else>
+      <template v-if="assets.length > 0">
+        <table class="assets-table">
+          <thead>
+            <tr>
+              <th>AssetName</th>
+              <th>Tag</th>
+              <th>Created</th>
+              <th>Owner</th>
+              <th>Last Modified</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="asset in assets" :key="asset.id">
+              <td>{{ asset.name }}</td>
+              <td>{{ asset.size }}</td>
+              <td>{{ asset.type }}</td>
+              <td>{{ asset.owner }}</td>
+              <td>{{ asset.modified }}</td>
+              <td>
+                <img :src="optionsIcon" @click="showOptions(asset)" class="option-button" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </template>
+      <template v-else>
+        <div>No data available</div>
+      </template>
     </div>
   </div>
 </template>
@@ -108,15 +103,41 @@ export default {
   name: 'TablePage',
   data() {
     return {
-      assets: [
-        { id: 1, name: 'Asset 1', size: '1MB', type: 'Image', modified: '2023-05-01' },
-        // Add more assets as needed
-      ],
+      isLoading: true,
+      assets: [],
+      currentFolderId: null,
       optionsIcon: require('../../assets/optionbutton.png'),
       selectedAsset: null
     };
   },
+  created() {
+    // Simulate fetching data for the root folder initially
+    this.fetchData(null); // Pass null to indicate root folder
+  },
   methods: {
+    fetchData(folderId) {
+      // Simulate fetching data from backend
+      setTimeout(() => {
+        // Assume data is fetched successfully
+        // Modify this logic to fetch data dynamically based on folderId
+        if (folderId === null) {
+          // Data for root folder
+          this.assets = [
+            { id: 1, name: 'Asset 1', size: '1MB', type: 'Image', owner: 'User1', modified: '2023-05-01' },
+            { id: 2, name: 'Asset 2', size: '2MB', type: 'Video', owner: 'User2', modified: '2023-05-02' },
+            // Add more assets as needed
+          ];
+        } else {
+          // Data for subfolder (simulated)
+          this.assets = [
+            { id: 3, name: 'Subfolder Asset 1', size: '1MB', type: 'Document', owner: 'User3', modified: '2023-05-03' },
+            { id: 4, name: 'Subfolder Asset 2', size: '3MB', type: 'Image', owner: 'User4', modified: '2023-05-04' },
+            // Add more assets as needed
+          ];
+        }
+        this.isLoading = false;
+      }, 2000); // Simulating 2 seconds delay
+    },
     showOptions(asset) {
       this.selectedAsset = asset;
     },

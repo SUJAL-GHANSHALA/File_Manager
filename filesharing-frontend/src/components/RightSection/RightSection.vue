@@ -67,7 +67,7 @@ export default {
             dummyDetailImage: require('../../assets/dummyrecentImage.png'),
             profile: require('../../assets/dummyProfile.png'),
             key: require('../../assets/key.png'),
-            isVisible: true,
+            isVisible: false,
             activeSection: 'details'
         }
     },

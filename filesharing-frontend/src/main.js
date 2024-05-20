@@ -12,9 +12,11 @@ import Column from 'primevue/column';
 import ColumnGroup from 'primevue/columngroup';  
 import Row from 'primevue/row'; 
 
+import store from './store'
 
 const app =createApp(App);
 
+app.use(store);
 app.use(PrimeVue);
 app.component('DataTable', DataTable);
 app.component('Column', Column);
@@ -22,5 +24,6 @@ app.component('ColumnGroup', ColumnGroup);
 app.component('Row', Row);
 
 app.use(router);
-app.mount('#app')
+app.mount('#app');
+
 

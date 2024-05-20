@@ -20,10 +20,14 @@ class RegistrationController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Return response
+        // storing user id in token
+        $token = $user->createToken('MyApp', ['user_id' => $user->id])->plainTextToken;
+        
+        // return response
         return response()->json([
             'message' => 'User registered successfully',
             'user' => $user,
+            'token' => $token
         ], 200);
     }
 }
