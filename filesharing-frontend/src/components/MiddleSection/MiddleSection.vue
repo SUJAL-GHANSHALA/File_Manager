@@ -32,6 +32,7 @@
         </div>
         <!-- nav-bar ends -->
 
+        <!-- recent section starts -->
         <div class="cards">
             <div class="recent">
                 <div class="recent-left">
@@ -55,6 +56,7 @@
                 </div>
             </div>
         </div>
+        <!-- recent section ends -->
 
         <div class="myfiles">
             <h3>My Files</h3>
@@ -110,11 +112,6 @@ export default {
     methods: {
         ...mapActions(['toggleProfileDropdown'])
     }
-    // created(){
-    //     bus.$on('thisisanevent',() => {
-    //         alert("sujal");
-    //     });
-    // }
 };
 </script>
 

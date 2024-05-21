@@ -6,6 +6,9 @@ use App\Models\File;
 use Illuminate\Http\Request;
 use App\Models\Folder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+
 
 class FolderController extends Controller
 {
@@ -55,26 +58,27 @@ class FolderController extends Controller
     {
         // Get the authenticated user's ID
         $userId = $request->user()->id;
-    
         // Retrieve files and folders at root level (where folder_id is null for files or parent_id is null for folders)
         $files = File::whereNull('folder_id')->where('user_id', $userId)->get();
         $folders = Folder::whereNull('parent_id')->where('user_id', $userId)->get();
-    
         // Check if any files or folders exist
         if ($files->isEmpty() && $folders->isEmpty()) {
             return response()->json(['error' => 'No files or folders found at root level'], 404);
         }
-    
+        // Append file URLs to each file object
+        $files->each(function ($file) {
+            $file->url = Storage::disk('public')->url(str_replace('public/', '', $file->path));
+        });
         // Prepare the response with files and folders
         $response = [
             'files' => $files,
             'folders' => $folders,
         ];
-    
         return response()->json($response);
     }
-
     
+
+
     // fetch folder contents
     // public function fetchContents(Folder $folder)
     // {
@@ -85,20 +89,27 @@ class FolderController extends Controller
     //     return response()->json($folder);
     // }
     public function fetchContents(Folder $folder){
-    // Check if the authenticated user owns the folder
-    if ($folder->user_id !== Auth::id()) {
-        return response()->json(['error' => 'You are not authorized to access this folder'], 403);
-    }
-    // Load the files and folders in the specified folder
-    $files = $folder->files()->get();
-    $folders = $folder->children()->get();
+        // Check if the authenticated user owns the folder
+        if ($folder->user_id !== Auth::id()) {
+            return response()->json(['error' => 'You are not authorized to access this folder'], 403);
+        }
 
-    // Check if both files and folders are empty
-    if ($files->isEmpty() && $folders->isEmpty()) {
-        return response()->json(['message' => 'No files or folders found in this directory'], 404);
-    }
-    // Return both files and folders
-    return response()->json(['files' => $files, 'folders' => $folders]);
+        // Load the files and folders in the specified folder
+        $files = File::where('folder_id', $folder->id)->get();//created my own logic,not relationship based
+        // $files = $folder->files()->get();//this code was wrong or not working(relationship based)
+        $folders = $folder->children()->get();
+
+        // Append file URLs to each file object
+        $files->each(function ($file) {
+            $file->url = Storage::disk('public')->url(str_replace('public/', '', $file->path));
+        });
+
+        // Check if both files and folders are empty
+        if ($files->isEmpty() && $folders->isEmpty()) {
+            return response()->json(['message' => 'No files or folders found in this directory'], 404);
+        }
+        // Return both files and folders
+        return response()->json(['files' => $files, 'folders' => $folders]);
     }
 
 

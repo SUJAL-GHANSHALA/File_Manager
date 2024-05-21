@@ -23,12 +23,36 @@ export default {
     }
   },
   methods: {
-    createFolder() {
+    async createFolder() {
       if (this.folderName) {
-        alert(`Folder '${this.folderName}' created!`);
-        this.sendDataToBackend();
-        this.folderName = '';
-        this.hidePopup(); // hide the component after creating the folder
+        try {
+          let parent_id = null;
+          const token = 'Bearer 1|GezUOhGwza1FcCulW6j3UsWq6EhayrL2v2tXlyLY7e0e92e1';
+          const response = await fetch('http://127.0.0.1:8000/api/folders', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': token
+            },
+            body: JSON.stringify({ name: this.folderName, path: '/storage', parent_id })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log(data);
+          alert(`Folder '${this.folderName}' created!`);
+          this.$store.dispatch('refreshFolderList'); // Dispatch action to refresh folder list
+          this.folderName = '';
+          this.hidePopup();
+          // location.reload();
+        } catch (error) {
+          console.error('Error creating folder:', error);
+          alert('Error creating folder: ' + error.message);
+        }
       } else {
         alert('Please enter a folder name.');
       }
@@ -38,9 +62,6 @@ export default {
     },
     hidePopup() {
       this.$store.dispatch('hideCreateFolderPopup'); // Dispatch action to hide CreateFolder component
-    },
-    sendDataToBackend() {
-      // function to send data to backend
     }
   }
 };

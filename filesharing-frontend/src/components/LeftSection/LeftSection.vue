@@ -81,19 +81,43 @@
             toggleStorageList() {
                 this.showStorageList = !this.showStorageList;
             },
-            handleFileUpload(event){
+            async handleFileUpload(event) {
                 const file = event.target.files[0];
-                if(file) {
-                    alert("sujal");
-                    console.log(file.name);
-                }
-            },
+                if (file) {
+                    try {
+                    let formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('folder_id', " " ); //folder id will be null
+                    
+                    let token = 'Bearer 1|GezUOhGwza1FcCulW6j3UsWq6EhayrL2v2tXlyLY7e0e92e1';
+                    const response = await fetch('http://127.0.0.1:8000/api/files', {
+                        method: 'POST',
+                        headers: {
+                            // 'Content-Type': 'application/json',
+                            'Accept': '/*',
+                            'Authorization': token
+                        },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('File uploaded successfully:', data);
+
+                    // Dispatch Vuex action to refresh the folder list
+                    this.$store.dispatch('refreshFolderList');
+                    } catch (error) {
+                    console.error('Error uploading file:', error);
+                    alert('Error uploading file: ' + error.message); // Provide user feedback
+                    }
+        }
+        },
             toggleCreateFolder() {
                 this.$store.dispatch('toggleCreateFolderPopup');
             }
-            // busevent(){
-            //     bus.$emit("thisisanevent");
-            // }
         }
     }
 </script>

@@ -1,3 +1,253 @@
+<template>
+  <div class="table-page">
+    <div v-if="isLoading">
+      Loading...
+    </div>
+    <div v-else>
+      <template v-if="assets.files.length > 0 || assets.folders.length > 0">
+        <table class="assets-table">
+          <thead>
+            <tr>
+              <th>Asset Name</th>
+              <th>Type</th>
+              <th>Size</th>
+              <th>Created</th>
+              <th>Owner</th>
+              <th>Last Modified</th>
+              <!-- <th>Options</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Display folders -->
+            <tr v-for="folder in assets.folders.slice().reverse()" :key="folder.id">
+              <td>{{ folder.name }}</td>
+              <td>Folder</td>
+              <td>-</td>
+              <td>{{ formatDate(folder.created_at) }}</td>
+              <td>
+                <div class="owner-td">
+                  <img src="../../assets/ShaneSujal.png" alt="" class="owner">
+                  <p>Shane</p>
+                </div>
+              </td>
+              <td>{{ formatDate(folder.updated_at) }}</td>
+              <td>
+                <img src="../../assets/optionbutton.png" alt="">
+              </td>
+            </tr>
+
+            <!-- Display files -->
+            <tr v-for="file in assets.files.slice().reverse()" :key="file.id">
+              <td>
+                <a :href="file.url" target="_blank">{{ file.name }}</a>
+              </td>
+              <td>{{ file.extension }}</td>
+              <td>{{ formatSize(file.size) }}</td>
+              <td>{{ formatDate(file.created_at) }}</td>
+              <td>
+                <div class="owner-td">
+                  <img src="../../assets/ShaneSujal.png" alt="" class="owner">
+                  <p>Shane</p>
+                </div>
+              </td>
+              <td>{{ formatDate(file.updated_at) }}</td>
+              <td>
+                <img src="../../assets/optionbutton.png" alt="">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </template>
+      <template v-else>
+        <div>No data available</div>
+      </template>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'TablePage',
+  data() {
+    return {
+      isLoading: true,
+      assets: {
+        files: [],
+        folders: []
+      }
+    };
+  },
+  mounted() {
+    // Fetch data for root folder when component is created
+    this.fetchDataForRootFolder();
+  },
+  watch: {
+    '$store.state.refreshFolderList'(newValue) {
+      if (newValue) {
+        this.fetchDataForRootFolder();
+        this.$store.dispatch('clearRefreshFolderList'); // Reset the state after fetching
+      }
+    }
+  },
+  methods: {
+    async fetchDataForRootFolder() {
+      try {
+        let token = 'Bearer 1|GezUOhGwza1FcCulW6j3UsWq6EhayrL2v2tXlyLY7e0e92e1';
+        const response = await fetch('http://127.0.0.1:8000/api/folders/root/contents', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': token
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        this.assets = data;
+        this.isLoading = false;
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        alert('Error fetching data: ' + error.message); // Provide user feedback
+        this.isLoading = false; // Ensure loading state is updated
+      }
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    formatSize(size) {
+      const i = Math.floor(Math.log(size) / Math.log(1024));
+      return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    },
+    previewAsset(asset) {
+      // Implement preview functionality
+      console.log('Preview asset:', asset);
+    },
+    downloadAsset(asset) {
+      // Implement download functionality
+      console.log('Download asset:', asset);
+    },
+    renameAsset(asset) {
+      // Implement rename functionality
+      console.log('Rename asset:', asset);
+    },
+    moveToTrash(asset) {
+      // Implement move to trash functionality
+      console.log('Move asset to trash:', asset);
+    },
+    viewDetails(asset) {
+      // Implement view details functionality
+      console.log('View details for asset:', asset);
+    }
+  }
+};
+</script>
+
+<style>
+.table-page {
+  padding: 20px;
+}
+
+.assets-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assets-table th, .assets-table td {
+  border: none; /* Removed inner borders */
+  padding: 8px;
+}
+
+.assets-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+  font-weight: bold; /* Made header text bold */
+}
+
+.option-button {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.asset-card {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  margin: 0;
+}
+
+.card-header button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.asset-card ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.asset-card ul li {
+  margin: 10px 0;
+}
+
+.asset-card ul li button {
+  width: 100%;
+  padding: 10px;
+  background-color: #5f40db;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.asset-card ul li button:hover {
+  background-color: #4831a4;
+}
+
+.owner-td {
+  display: flex;
+  align-items: center;
+}
+
+.owner {
+  height: 30px;
+  margin-right: 7px;
+}
+
+/* New styles for links */
+.assets-table a {
+  color: inherit; /* Inherit color from parent element */
+  text-decoration: none; /* Remove underline */
+}
+
+.assets-table a:hover {
+  text-decoration: none; /* Add underline on hover */
+}
+</style>
+
+
 <!-- <template>
   <div class="container">
     <DataTable :value="products" :style="tableStyles">
@@ -59,194 +309,3 @@ const handleimageclick = (data) => {
   height: 50px;
 }
 </style> -->
-
-<template>
-  <div class="table-page">
-    <div v-if="isLoading">
-      Loading...
-    </div>
-    <div v-else>
-      <template v-if="assets.length > 0">
-        <table class="assets-table">
-          <thead>
-            <tr>
-              <th>AssetName</th>
-              <th>Tag</th>
-              <th>Created</th>
-              <th>Owner</th>
-              <th>Last Modified</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="asset in assets" :key="asset.id">
-              <td>{{ asset.name }}</td>
-              <td>{{ asset.size }}</td>
-              <td>{{ asset.type }}</td>
-              <td>{{ asset.owner }}</td>
-              <td>{{ asset.modified }}</td>
-              <td>
-                <img :src="optionsIcon" @click="showOptions(asset)" class="option-button" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </template>
-      <template v-else>
-        <div>No data available</div>
-      </template>
-    </div>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'TablePage',
-  data() {
-    return {
-      isLoading: true,
-      assets: [],
-      currentFolderId: null,
-      optionsIcon: require('../../assets/optionbutton.png'),
-      selectedAsset: null
-    };
-  },
-  created() {
-    // Simulate fetching data for the root folder initially
-    this.fetchData(null); // Pass null to indicate root folder
-  },
-  methods: {
-    fetchData(folderId) {
-      // Simulate fetching data from backend
-      setTimeout(() => {
-        // Assume data is fetched successfully
-        // Modify this logic to fetch data dynamically based on folderId
-        if (folderId === null) {
-          // Data for root folder
-          this.assets = [
-            { id: 1, name: 'Asset 1', size: '1MB', type: 'Image', owner: 'User1', modified: '2023-05-01' },
-            { id: 2, name: 'Asset 2', size: '2MB', type: 'Video', owner: 'User2', modified: '2023-05-02' },
-            // Add more assets as needed
-          ];
-        } else {
-          // Data for subfolder (simulated)
-          this.assets = [
-            { id: 3, name: 'Subfolder Asset 1', size: '1MB', type: 'Document', owner: 'User3', modified: '2023-05-03' },
-            { id: 4, name: 'Subfolder Asset 2', size: '3MB', type: 'Image', owner: 'User4', modified: '2023-05-04' },
-            // Add more assets as needed
-          ];
-        }
-        this.isLoading = false;
-      }, 2000); // Simulating 2 seconds delay
-    },
-    showOptions(asset) {
-      this.selectedAsset = asset;
-    },
-    closeCard() {
-      this.selectedAsset = null;
-    },
-    previewAsset() {
-      // Implement preview functionality
-    },
-    downloadAsset() {
-      // Implement download functionality
-    },
-    renameAsset() {
-      // Implement rename functionality
-    },
-    addToStarred() {
-      // Implement add to starred functionality
-    },
-    addTags() {
-      // Implement add tags functionality
-    },
-    moveAsset() {
-      // Implement move functionality
-    },
-    moveToTrash() {
-      // Implement move to trash functionality
-    },
-    viewDetails() {
-      // Implement view details functionality
-    }
-  }
-};
-</script>
-
-<style>
-.table-page {
-  padding: 20px;
-}
-
-.assets-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.assets-table th, .assets-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.assets-table th {
-  background-color: #f2f2f2;
-  text-align: left;
-}
-
-.option-button {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-
-.asset-card {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 300px;
-  padding: 20px;
-  background-color: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  z-index: 1000;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-header h3 {
-  margin: 0;
-}
-
-.card-header button {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.asset-card ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.asset-card ul li {
-  margin: 10px 0;
-}
-
-.asset-card ul li button {
-  width: 100%;
-  padding: 10px;
-  background-color: #5f40db;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.asset-card ul li button:hover {
-  background-color: #4831a4;
-}
-</style>
-

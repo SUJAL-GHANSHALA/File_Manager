@@ -22,7 +22,7 @@ class File extends Model
 
     public function folder()
     {
-        return $this->belongsTo(Folder::class)->withDefault(); // allow file to belong to null folder
+        return $this->belongsTo(Folder::class, 'folder_id')->withDefault(); // allow file to belong to null folder
     }
 
     public function user()
