@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div :class="{'detail-main-section-wrapper': true, 'hidden': !isVisible}">
         <div class="topbox">
             <div :class="{'details': true, 'active': activeSection === 'details'}" @click="activeSection = 'details'">
@@ -80,7 +80,115 @@ export default {
         }
     }
 }
-</script>
+</script> -->
+<template>
+    <div :class="{'detail-main-section-wrapper': true, 'hidden': !isVisible}">
+      <div class="topbox">
+        <div :class="{'details': true, 'active': activeSection === 'details'}" @click="activeSection = 'details'">
+          <h4>Details</h4>
+        </div>
+        <div :class="{'comments': true, 'active': activeSection === 'comments'}" @click="activeSection = 'comments'">
+          <h4>Comments</h4>
+        </div>
+        <img :src="cross" class="cross-icon" @click="hideDetail" />
+      </div>
+      <div v-if="activeSection === 'details'">
+        <div class="detail-header">
+          <p>sujal.jpg</p>
+        </div>
+        <div class="img-section">
+          <img :src="dummyDetailImage" />
+        </div>
+        <div class="access-section">
+          <p>Who has access</p>
+          <div class="all-access-data">
+            <img :src="profile" class="access-members" />
+            <img :src="profile" class="access-members" />
+          </div>
+          <div class="access-btn">
+            <button @click="showManageAccess = true">
+              <img :src="key" />
+              Manage access
+            </button>
+          </div>
+        </div>
+        <div class="file-details-section">
+          <div class="heading-file-detail">
+            <p>File Detail:</p>
+          </div>
+          <div class="file-detail">
+            <p><strong>Location</strong></p>
+            <p class="filedetails">My Files</p>
+            <p><strong>Type</strong></p>
+            <p  class="filedetails">Image</p>
+            <p><strong>Size</strong></p>
+            <p  class="filedetails">1.2MB</p>
+            <p><strong>Owner</strong></p>
+            <p  class="filedetails">Sujal</p>
+            <p><strong>Modified</strong></p>
+            <p class="filedetails">13 mar 2022 Sujal</p>
+            <p><strong>Created</strong></p>
+            <p>12 mar 2022</p>
+          </div>
+        </div>
+      </div>
+      <div v-else class="comments">
+        <div class="comments-section">
+          <textarea placeholder="Add your comment here..."></textarea>
+          <button @click="sendComment">Send</button>
+        </div>
+      </div>
+      <ManageAccess 
+        v-if="showManageAccess" 
+        :fileName="'sujal.jpg'" 
+        :showPopup="showManageAccess"
+        @close-popup="showManageAccess = false"
+      />
+    </div>
+  </template>
+  
+  <script>
+  import emitter from '../../eventbus.js';
+  import ManageAccess from '../MiddleSection/ManageAccess.vue';
+  
+  export default {
+    name: 'RightSection',
+    components: {
+      ManageAccess
+    },
+    data() {
+      return {
+        cross: require('../../assets/cross.png'),
+        dummyDetailImage: require('../../assets/dummyrecentImage.png'),
+        profile: require('../../assets/dummyProfile.png'),
+        key: require('../../assets/key.png'),
+        isVisible: false,
+        activeSection: 'details',
+        showManageAccess: false
+      }
+    },
+    created() {
+      emitter.on('showDetails', this.showDetail);
+    },
+    beforeUnmount() {
+      emitter.off('showDetails', this.showDetail);
+    },
+    methods: {
+      hideDetail() {
+        this.isVisible = false;
+      },
+      showDetail() {
+        this.isVisible = true;
+        this.activeSection = 'details';
+      },
+      sendComment() {
+        // Empty function to handle sending comments to the backend
+      }
+    }
+  }
+  </script>
+  
+
 
 <style>
 .hidden {

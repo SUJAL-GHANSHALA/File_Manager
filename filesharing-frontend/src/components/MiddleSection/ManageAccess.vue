@@ -1,5 +1,5 @@
 <!-- ManageAccess.vue -->
-<template>
+<!-- <template>
     <div v-if="showPopup" class="popup">
       <div class="popup-content">
         <h2>Manage Access for {{ fileName }}</h2>
@@ -62,7 +62,77 @@
       }
     }
   };
+  </script> -->
+  <template>
+    <div v-if="showPopup" class="popup">
+      <div class="popup-content">
+        <button class="close-button" @click="$emit('close-popup')">X</button>
+        <h2>Manage Access for {{ fileName }}</h2>
+        <input type="email" v-model="email" placeholder="Add people through email">
+        <div class="access-options">
+          <label>
+            <input type="radio" value="restricted" v-model="accessType">
+            Restricted
+          </label>
+          <label>
+            <input type="radio" value="private" v-model="accessType">
+            Private
+          </label>
+          <label>
+            <input type="radio" value="public" v-model="accessType">
+            Public
+          </label>
+        </div>
+        <p class="access-message">{{ accessMessage }}</p>
+        <div class="button-row">
+          <button class="copy-link" @click="copyLink">Copy Link</button>
+          <button class="done" @click="done">Done</button>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    props: {
+      fileName: {
+        type: String,
+        required: true
+      },
+      showPopup: {
+        type: Boolean,
+        default: false
+      }
+    },
+    data() {
+      return {
+        email: '',
+        accessType: 'restricted'
+      };
+    },
+    computed: {
+      accessMessage() {
+        if (this.accessType === 'restricted') {
+          return 'The file is restricted, anyone who has access can see the file.';
+        } else if (this.accessType === 'private') {
+          return 'The file is private, add a user or copy the link to share.';
+        } else {
+          return 'The file is public, anyone with the link can access the file.';
+        }
+      }
+    },
+    methods: {
+      copyLink() {
+        // Function to copy the link to clipboard
+      },
+      done() {
+        this.$emit('close-popup');
+      }
+    }
+  };
   </script>
+  
+  
   
   <style scoped>
   body {

@@ -4,6 +4,8 @@
       Loading...
     </div>
     <div v-else>
+      <!-- Back Button -->
+      <button v-if="folderStack.length > 0" @click="navigateToRoot">Home</button>
       <template v-if="assets.files.length > 0 || assets.folders.length > 0">
         <table class="assets-table">
           <thead>
@@ -19,7 +21,8 @@
           </thead>
           <tbody>
             <!-- Display folders -->
-            <tr v-for="folder in assets.folders.slice().reverse()" :key="folder.id">
+            <tr v-for="folder in assets.folders.slice().reverse()" :key="folder.id"
+              @dblclick="fetchDataForFolder(folder.id)">
               <td>{{ folder.name }}</td>
               <td>Folder</td>
               <td>-</td>
@@ -32,14 +35,17 @@
               </td>
               <td>{{ formatDate(folder.updated_at) }}</td>
               <td>
-                <img src="../../assets/optionbutton.png" alt="">
+                <img src="../../assets/optionbutton.png" alt="Options"
+                  @click="showOptions('folder', folder.id, $event)">
+                <OptionButton v-if="selectedItem.type === 'folder' && selectedItem.id === folder.id"
+                  :position="position" @close="closeOptions" />
               </td>
             </tr>
 
             <!-- Display files -->
             <tr v-for="file in assets.files.slice().reverse()" :key="file.id">
               <td>
-                <a :href="file.url" target="_blank">{{ file.name }}</a>
+                <a :href="file.url" target="_blank" @click="handleFileAccess">{{ file.name }}</a>
               </td>
               <td>{{ file.extension }}</td>
               <td>{{ formatSize(file.size) }}</td>
@@ -52,7 +58,9 @@
               </td>
               <td>{{ formatDate(file.updated_at) }}</td>
               <td>
-                <img src="../../assets/optionbutton.png" alt="">
+                <img src="../../assets/optionbutton.png" alt="Options" @click="showOptions('file', file.id, $event)">
+                <OptionButton v-if="selectedItem.type === 'file' && selectedItem.id === file.id" :position="position"
+                  @close="closeOptions" />
               </td>
             </tr>
           </tbody>
@@ -66,15 +74,24 @@
 </template>
 
 <script>
+import emitter from '../../eventbus.js';
+import OptionButton from './optionbButton.vue';
+
 export default {
   name: 'TablePage',
+  components: {
+    OptionButton,
+  },
   data() {
     return {
+      selectedItem: { type: '', id: null },
+      position: { top: 0, left: 0 },
       isLoading: true,
       assets: {
         files: [],
         folders: []
-      }
+      },
+      folderStack: [] // Stack to keep track of folder navigation
     };
   },
   mounted() {
@@ -92,6 +109,7 @@ export default {
   methods: {
     async fetchDataForRootFolder() {
       try {
+        this.isLoading = true; // Set loading state to true
         let token = 'Bearer 1|GezUOhGwza1FcCulW6j3UsWq6EhayrL2v2tXlyLY7e0e92e1';
         const response = await fetch('http://127.0.0.1:8000/api/folders/root/contents', {
           method: 'GET',
@@ -109,12 +127,52 @@ export default {
         const data = await response.json();
         this.assets = data;
         this.isLoading = false;
+        this.folderStack = []; // Reset folder stack
         console.log(data);
       } catch (error) {
         console.error('Error fetching data:', error);
         alert('Error fetching data: ' + error.message); // Provide user feedback
         this.isLoading = false; // Ensure loading state is updated
       }
+    },
+    async fetchDataForFolder(folderId) {
+      try {
+        this.isLoading = true; // Set loading state to true
+        let token = 'Bearer 1|GezUOhGwza1FcCulW6j3UsWq6EhayrL2v2tXlyLY7e0e92e1';
+        const response = await fetch(`http://127.0.0.1:8000/api/folders/${folderId}/contents`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': token
+          }
+        });
+
+        if (response.status === 404) {
+          // Handle folder with no content
+          this.assets = { files: [], folders: [] };
+          this.isLoading = false;
+          this.folderStack.push(folderId); // Push current folder ID to stack
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        this.assets = data;
+        this.isLoading = false;
+        this.folderStack.push(folderId); // Push current folder ID to stack
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        alert('Error fetching data: ' + error.message); // Provide user feedback
+        this.isLoading = false; // Ensure loading state is updated
+      }
+    },
+    navigateToRoot() {
+      this.fetchDataForRootFolder(); // Fetch data for the root folder
     },
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -143,7 +201,40 @@ export default {
     viewDetails(asset) {
       // Implement view details functionality
       console.log('View details for asset:', asset);
-    }
+    },
+    handleFileAccess(file) {
+      emitter.emit('file-accessed', {
+        title: file.name,
+        url: file.url,
+        type: file.extension,
+        accessed_at: new Date().toISOString()
+      });
+    },
+    showOptions(type, id, event) {
+      const rect = event.target.getBoundingClientRect();
+      const cardWidth = 200; // Width of the card
+      const cardHeight = 300; // Estimated height of the card
+      const padding = 10; // Some padding to avoid edge collision
+
+      let top = rect.top + window.scrollY;
+      let left = rect.left + window.scrollX;
+
+      // Check if the card will overflow on the right
+      if (rect.left + cardWidth + padding > window.innerWidth) {
+        left = window.innerWidth - cardWidth - padding;
+      }
+
+      // Check if the card will overflow on the bottom
+      if (rect.top + cardHeight + padding > window.innerHeight) {
+        top = window.innerHeight - cardHeight - padding;
+      }
+
+      this.position = { top, left };
+      this.selectedItem = { type, id };
+    },
+    closeOptions() {
+      this.selectedItem = { type: '', id: null };
+    },
   }
 };
 </script>
@@ -200,52 +291,33 @@ export default {
 .card-header button {
   background: none;
   border: none;
-  font-size: 20px;
   cursor: pointer;
+  font-size: 1.2em;
 }
-
-.asset-card ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.asset-card ul li {
-  margin: 10px 0;
-}
-
-.asset-card ul li button {
-  width: 100%;
-  padding: 10px;
-  background-color: #5f40db;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.asset-card ul li button:hover {
-  background-color: #4831a4;
-}
-
 .owner-td {
   display: flex;
   align-items: center;
 }
-
-.owner {
-  height: 30px;
-  margin-right: 7px;
+.owner-td img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 5px;
 }
 
-/* New styles for links */
-.assets-table a {
-  color: inherit; /* Inherit color from parent element */
-  text-decoration: none; /* Remove underline */
+.asset-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
-
-.assets-table a:hover {
-  text-decoration: none; /* Add underline on hover */
+.asset-option img {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
 }
 </style>
+
+
 
 
 <!-- <template>
