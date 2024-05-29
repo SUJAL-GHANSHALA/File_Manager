@@ -10,109 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'file' => 'required|file|max:204800|mimes:jpg,jpeg,png,gif,doc,docx,pdf', // max size 200MB and allowed file types
-    //         'folder_id' => 'nullable|exists:folders,id',
-    //     ]);
-
-    //     $uploadedFile = $request->file('file');
-    //     $fileName = $uploadedFile->getClientOriginalName();
-    //     $extension = $uploadedFile->getClientOriginalExtension();
-    //     $size = $uploadedFile->getSize();
-    //     $mime = $uploadedFile->getMimeType();
-    //     $folderId = $request->folder_id;
-    //     $userId = Auth::id();
-
-    //     // check if a file with the same name already exists in the specified folder
-    //     $existingFile = File::where('name', $fileName)
-    //                         ->where('folder_id', $folderId)
-    //                         ->first();
-
-    //     if ($existingFile) {
-    //         return response()->json(['error' => 'A file with the same name already exists in this folder.'], 400);
-    //     }
-
-    //     // determine the file storage path
-    //     $folderPath = Folder::find($folderId)->path;
-    //     $filePath = $uploadedFile->storeAs('public' . $folderPath, $fileName);
-    //     $location = storage_path('app/public' . $folderPath . '/' . $fileName);
-
-    //     // save file metadata to the database
-    //     $file = new File();
-    //     $file->name = $fileName;
-    //     $file->extension = $extension;
-    //     $file->size = $size;
-    //     $file->mime = $mime;
-    //     $file->folder_id = $folderId;
-    //     $file->user_id = $userId;
-    //     $file->path = $filePath; // store the file path
-    //     $file->location = $location; // store the file location
-    //     $file->save();
-
-    //     return response()->json($file, 201);
-    // }
-
-    //second new code*
-
-    // public function store(Request $request){
-    //     $request->validate([
-    //         'file' => 'required|file|max:204800|mimes:jpg,jpeg,png,gif,doc,docx,pdf', // max size 200MB and allowed file types
-    //         'folder_id' => 'nullable|exists:folders,id', // Make folder_id nullable
-    //     ]);
-
-    //     $uploadedFile = $request->file('file');
-    //     $fileName = $uploadedFile->getClientOriginalName();
-    //     $extension = $uploadedFile->getClientOriginalExtension();
-    //     $size = $uploadedFile->getSize();
-    //     $mime = $uploadedFile->getMimeType();
-    //     $folderId = $request->folder_id;
-    //     $userId = Auth::id();
-
-    //     $folderPath = ''; // Initialize folderPath
-
-    //     // Check if folder_id is provided and valid
-    //     if ($folderId) {
-    //         // Retrieve folder's path only if folder_id is provided
-    //         $folder = Folder::find($folderId);
-    //         if (!$folder) {
-    //             return response()->json(['error' => 'The specified folder does not exist.'], 404);
-    //         }
-    //         $folderPath = $folder->path;
-    //     } else {
-    //         // Set folderPath to root folder if folder_id is null
-    //         $rootFolder = Folder::whereNull('parent_id')->first();
-    //         if (!$rootFolder) {
-    //             return response()->json(['error' => 'Root folder does not exist.'], 404);
-    //         }
-    //         $folderPath = $rootFolder->path;
-    //     }
-
-    //     // determine the file storage path
-    //     $filePath = $uploadedFile->storeAs('public' . $folderPath, $fileName);
-    //     $location = storage_path('app/public' . $folderPath . '/' . $fileName);
-
-    //     // save file metadata to the database
-    //     $file = new File();
-    //     $file->name = $fileName;
-    //     $file->extension = $extension;
-    //     $file->size = $size;
-    //     $file->mime = $mime;
-    //     $file->folder_id = $folderId;
-    //     $file->user_id = $userId;
-    //     $file->path = $filePath; // store the file path
-    //     $file->location = $location; // store the file location
-    //     $file->save();
-
-    //     return response()->json($file, 201);
-    // }
-
-    //newest code with
     public function store(Request $request){
         $request->validate([
-            'file' => 'required|file|max:204800|mimes:jpg,jpeg,png,gif,doc,docx,pdf', // max size 200MB and allowed file types
-            'folder_id' => 'nullable|exists:folders,id', // Make folder_id nullable
+            'file' => 'required|file|max:204800|mimes:jpg,jpeg,png,gif,doc,docx,pdf', 
+            'folder_id' => 'nullable|exists:folders,id', 
         ]);
 
         $uploadedFile = $request->file('file');
@@ -123,25 +24,25 @@ class FileController extends Controller
         $folderId = $request->folder_id;
         $userId = Auth::id();
 
-        $folderPath = ''; // Initialize folderPath
+        $folderPath = ''; 
 
-        // Check if folder_id is provided and valid
+      
         if ($folderId) {
-            // Retrieve folder's path only if folder_id is provided
+            
             $folder = Folder::find($folderId);
             if (!$folder) {
                 return response()->json(['error' => 'The specified folder does not exist.'], 404);
             }
             $folderPath = $folder->path;
         } else {
-            // Check if any folders exist
+           
             $foldersExist = Folder::exists();
 
             if (!$foldersExist) {
-                // Treat the file as being in the root folder since no folders exist
-                $folderPath = ''; // or whatever your root folder path is
+               
+                $folderPath = ''; 
             } else {
-                // Root folder exists, find its path
+               
                 $rootFolder = Folder::whereNull('parent_id')->first();
                 if (!$rootFolder) {
                     return response()->json(['error' => 'Root folder does not exist.'], 404);
@@ -150,11 +51,11 @@ class FileController extends Controller
             }
         }
 
-        // determine the file storage path
+      
         $filePath = $uploadedFile->storeAs('public' . $folderPath, $fileName);
         $location = storage_path('app/public' . $folderPath . '/' . $fileName);
 
-        // save file metadata to the database
+      
         $file = new File();
         $file->name = $fileName;
         $file->extension = $extension;
@@ -162,8 +63,8 @@ class FileController extends Controller
         $file->mime = $mime;
         $file->folder_id = $folderId;
         $file->user_id = $userId;
-        $file->path = $filePath; // store the file path
-        $file->location = $location; // store the file location
+        $file->path = $filePath; 
+        $file->location = $location; 
         $file->save();
 
         return response()->json($file, 201);
@@ -174,10 +75,10 @@ class FileController extends Controller
     {
         $file = File::findOrFail($id);
 
-        // delete the file from the storage
+    
         Storage::delete($file->path);
 
-        // delete the file record from the database
+    
         $file->delete();
 
         return response()->json(null, 204);
@@ -186,6 +87,7 @@ class FileController extends Controller
     public function show($id)
     {
         $file = File::findOrFail($id);
+        $file->url = Storage::disk('public')->url(str_replace('public/', '', $file->path));
         return response()->json($file);
     }
 

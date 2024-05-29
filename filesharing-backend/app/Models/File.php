@@ -22,11 +22,16 @@ class File extends Model
 
     public function folder()
     {
-        return $this->belongsTo(Folder::class, 'folder_id')->withDefault(); // allow file to belong to null folder
+        return $this->belongsTo(Folder::class, 'folder_id')->withDefault(); 
     }
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

@@ -53,4 +53,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(File::class)->whereNull('folder_id');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
