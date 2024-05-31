@@ -24,6 +24,5 @@ app.component('ColumnGroup', ColumnGroup);
 app.component('Row', Row);
 
 app.use(router);
-app.mount('#app');
-
+app.mount('#app')
 

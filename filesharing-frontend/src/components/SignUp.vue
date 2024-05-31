@@ -116,7 +116,7 @@ export default {
     },
     handleGoogleLogin() {
       
-      window.location.href = '/auth/google';
+      // window.location.href = '/auth/google';
     }
   },
   mounted() {
@@ -128,59 +128,6 @@ export default {
   }
 };
 </script>
-
-  
-  
-
-<!-- JS code here -->
-<!-- <script> -->
-    // import axios from 'axios';
-
-    // export default {
-    //     name: 'SignUp',
-        // data(){
-        //     return {
-        //         name: '',
-        //         email: '',
-        //         password: '',
-        //         // token: 'token_value_here'
-        //     }
-        // },
-        // methods: {
-        //     async signUp() {
-        //         try {
-        //             console.warn("signUp", this.name, this.email, this.password);
-        //             const response = await axios.post("http://127.0.0.1:8000/api/register", {
-        //                 name: this.name,
-        //                 email: this.email,
-        //                 password: this.password
-        //             }, {
-        //                 headers: {
-        //                     "Accept": "application/json",
-        //                     // "Authorization": token
-        //                 }
-        //             });
-        //             console.warn(response);
-        //             if (response.status === 200) {
-        //                 alert("Signup successful");
-        //                 this.$router.push({name:'Home'})
-        //             }
-        //         } catch (error) {
-        //             // Handle errors
-        //             console.error("Error occurred:", error);
-        //             alert("Signup failed: " + error.message);
-        //         }
-        //     }
-        // },
-        // mounted() {
-        //     console.warn("sujal"); //in this function will try to user to redirect page after he successfully sign up
-            // let user = localStorage.getItem('user-info'); //this code is by you tuber, just for understanding purpose,like when user logged, he should not visit the signup/signin again
-            // if(user){
-            //     this.$router.push({name:'Home'})
-            // }
-//         }
-//     }
-//
 
 <!-- CSS code here -->
 <style scoped>

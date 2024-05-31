@@ -1,11 +1,26 @@
 <template>
-  <div :style="{ top: `${position.top}px`, left: `${position.left}px` }" class="options-menu">
-    <button @click="previewAsset">Preview</button>
-    <button @click="downloadAsset">Download</button>
-    <button @click="renameAsset">Rename</button>
-    <button @click="moveToTrash">Move to Trash</button>
-    <button @click="viewDetails">Details</button>
-    <button @click="closeMenu">Close</button>
+  <div>
+    <div :style="{ top: `${position.top}px`, left: `${position.left}px` }" class="options-menu">
+      <button @click="previewFile">Preview</button>
+      <button @click="toggleStar">{{ isStarred ? 'Remove from star' : 'Add to star' }}</button>
+      <button @click="downloadAsset">Download</button>
+      <button @click="showRenameCard">Rename</button>
+      <button @click="deleteForever" class="delete">Delete Forever</button>
+      <button @click="move">Move</button>
+      <button @click="viewDetails">Details</button>
+      <button @click="closeMenu" class="close">Close</button>
+    </div>
+
+    <!-- rename file card starts -->
+    <transition name="fade">
+      <div v-if="showRenameDialog" class="rename-card">
+        <h2>Rename File</h2>
+        <input v-model="newFileName" type="text" placeholder="Enter new file name">
+        <button @click="renameFile">Rename</button>
+        <button @click="cancelRename">Cancel</button>
+      </div>
+    </transition>
+    <!-- rename file card ends -->
   </div>
 </template>
 
@@ -20,33 +35,173 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      showRenameDialog: false,
+      newFileName: '',
+      isStarred: false
+    };
+  },
+  created() {
+    this.getFileDetails();
+  },
   methods: {
+    async getFileDetails() {
+      const filefolderIdCookie = document.cookie.split('; ').find(row => row.startsWith('optionfileId='));
+      let fileId = null;
+      if (filefolderIdCookie) {
+        fileId = filefolderIdCookie.split('=')[1];
+      }
+
+      this.token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/files/${fileId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + this.token
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.isStarred = data.is_starred;
+        }
+      } catch (error) {
+        console.error('Error fetching file details:', error);
+      }
+    },
     closeMenu() {
+      document.cookie = 'optionfileId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       this.$emit('close');
     },
-    previewAsset() {
-      // Implement preview functionality
-      console.log('Preview asset');
+    async toggleStar() {
+      const filefolderIdCookie = document.cookie.split('; ').find(row => row.startsWith('optionfileId='));
+      let fileId = null;
+      if (filefolderIdCookie) {
+        fileId = filefolderIdCookie.split('=')[1];
+      }
+
+      this.token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/files/${fileId}/star`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + this.token
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.isStarred = data.is_starred;
+          alert(data.is_starred ? 'File starred successfully' : 'File unstarred successfully');
+          document.cookie = 'optionfileId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          this.$emit('close');
+          // location.reload();
+          return;
+        }
+      } catch (error) {
+        console.error('Error toggling star status:', error);
+        alert('Failed to toggle star status');
+      }
     },
     downloadAsset() {
-      // Implement download functionality
       console.log('Download asset');
     },
     renameAsset() {
-      // Implement rename functionality
       console.log('Rename asset');
     },
-    moveToTrash() {
-      // Implement move to trash functionality
+    move() {
       console.log('Move asset to trash');
     },
     viewDetails() {
-      emitter.emit('showDetails'); // Emit event to show details
-      this.closeMenu(); // Close the options menu
+      emitter.emit('showDetails');
+      this.$emit('close');
+    },
+    async deleteForever() {
+      const filefolderIdCookie = document.cookie.split('; ').find(row => row.startsWith('optionfileId='));
+      let fileId = null;
+      if (filefolderIdCookie) {
+        fileId = filefolderIdCookie.split('=')[1];
+      }
+
+      this.token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/files/${fileId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + this.token
+          }
+        });
+
+        if (response.status === 204) {
+          alert('File deleted successfully');
+          document.cookie = 'optionfileId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          this.$emit('close');
+          location.reload();
+          return;
+        }
+      } catch (error) {
+        console.error('Error deleting file:', error);
+        alert('Failed to delete file');
+      }
+      this.$emit('close');
+    },
+    showRenameCard() {
+      this.showRenameDialog = true;
+    },
+    async renameFile() {
+      const filefolderIdCookie = document.cookie.split('; ').find(row => row.startsWith('optionfileId='));
+      let fileId = null;
+      if (filefolderIdCookie) {
+        fileId = filefolderIdCookie.split('=')[1];
+      }
+
+      this.token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/files/${fileId}/rename`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + this.token
+          },
+          body: JSON.stringify({
+            name: this.newFileName,
+          }),
+        });
+
+        if (response.ok) {
+          alert('File renamed successfully');
+          document.cookie = 'optionfileId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          this.$emit('close');
+          location.reload();
+          return;
+        } else {
+          alert("File name already exists");
+        }
+      } catch (error) {
+        console.error('Error renaming file:', error);
+        alert('Failed to rename file');
+      }
+      this.showRenameDialog = false;
+    },
+    cancelRename() {
+      this.showRenameDialog = false;
     }
   }
 };
 </script>
+
 
 <style scoped>
 .options-menu {
@@ -56,6 +211,7 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
   z-index: 1000;
+  font-family: Arial, sans-serif;
 }
 
 .options-menu button {
@@ -67,114 +223,67 @@ export default {
   background: none;
   text-align: left;
   cursor: pointer;
+  font-family: Arial, sans-serif;
 }
 
 .options-menu button:hover {
   background-color: #f2f2f2;
 }
+
+.options-menu .delete {
+  color: #ff4136;
+}
+
+.options-menu .close {
+  color: #0074d9;
+}
+
+.rename-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  z-index: 1001;
+  font-family: Arial, sans-serif;
+  width: 300px; 
+  transition: all 0.3s ease;
+}
+
+.rename-card h2 {
+  margin-bottom: 10px;
+}
+
+.rename-card input {
+  display: block;
+  width: calc(100% - 20px); 
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.rename-card button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #0074d9;
+  color: white;
+  cursor: pointer;
+}
+
+.rename-card button + button {
+  margin-left: 10px;
+}
+
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
 </style>
-
-
-<!-- <template>
-    <div :style="cardStyle" class="option-card" @click.self="close">
-      <ul>
-        <li @click="preview">Preview</li>
-        <li @click="download">Download</li>
-        <li @click="rename">Rename</li>
-        <li @click="addToStarred">Add to Starred</li>
-        <li @click="addTags">Add Tags</li>
-        <li @click="move">Move</li>
-        <li @click="moveToTrash">Move to Trash</li>
-        <li @click="details">Details</li>
-      </ul>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    props: {
-      position: {
-        type: Object,
-        required: true,
-      },
-    },
-    computed: {
-      cardStyle() {
-        return {
-          top: `${this.position.top}px`,
-          left: `${this.position.left}px`,
-          position: 'absolute',
-        };
-      },
-    },
-    methods: {
-      close() {
-        this.$emit('close');
-      },
-      preview() {
-        // Implement preview functionality
-        this.close();
-      },
-      download() {
-        // Implement download functionality
-        this.close();
-      },
-      rename() {
-        // Implement rename functionality
-        this.close();
-      },
-      addToStarred() {
-        // Implement add to starred functionality
-        this.close();
-      },
-      addTags() {
-        // Implement add tags functionality
-        this.close();
-      },
-      move() {
-        // Implement move functionality
-        this.close();
-      },
-      moveToTrash() {
-        // Implement move to trash functionality
-        this.close();
-      },
-      details() {
-        // Implement details functionality
-        this.close();
-      },
-    },
-  };
-  </script>
-  --
-  <style scoped>
-  .option-card {
-    background-color: white;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    width: 180px;
-    z-index: 10;
-  }
-  
-  .option-card ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .option-card li {
-    padding: 10px 15px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .option-card li:last-child {
-    border-bottom: none;
-  }
-  
-  .option-card li:hover {
-    background-color: #f5f5f5;
-  }
-  </style> -->
-  

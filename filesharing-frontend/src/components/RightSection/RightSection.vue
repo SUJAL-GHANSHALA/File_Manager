@@ -1,193 +1,220 @@
-<!-- <template>
-    <div :class="{'detail-main-section-wrapper': true, 'hidden': !isVisible}">
-        <div class="topbox">
-            <div :class="{'details': true, 'active': activeSection === 'details'}" @click="activeSection = 'details'">
-                <h4>Details</h4>
-            </div>
-            <div :class="{'comments': true, 'active': activeSection === 'comments'}" @click="activeSection = 'comments'">
-                <h4>Comments</h4>
-            </div>
-            <img :src="cross" class="cross-icon" @click="hideDetail" />
-        </div>
-        <div v-if="activeSection === 'details'">
-            <div class="detail-header">
-                <p>sujal.jpg</p>
-            </div>
-            <div class="img-section">
-                <img :src="dummyDetailImage" />
-            </div>
-            <div class="access-section">
-                <p>Who has access</p>
-                <div class="all-access-data">
-                    <img :src="profile" class="access-members" />
-                    <img :src="profile" class="access-members" />
-                </div>
-                <div class="access-btn">
-                    <button>
-                        <img :src="key" />
-                        Manage access
-                    </button>
-                </div>
-            </div>
-            <div class="file-details-section">
-                <div class="heading-file-detail">
-                    <p>File Detail:</p>
-                </div>
-                <div class="file-detail">
-                    <p><strong>Location</strong></p>
-                    <p class="filedetails">My Files</p>
-                    <p><strong>Type</strong></p>
-                    <p  class="filedetails">Image</p>
-                    <p><strong>Size</strong></p>
-                    <p  class="filedetails">1.2MB</p>
-                    <p><strong>Owner</strong></p>
-                    <p  class="filedetails">Sujal</p>
-                    <p><strong>Modified</strong></p>
-                    <p class="filedetails">13 mar 2022 Sujal</p>
-                    <p><strong>Created</strong></p>
-                    <p>12 mar 2022</p>
-                </div>
-            </div>
-        </div>
-        <div v-else class="comments">
-            <div class="comments-section">
-                <textarea placeholder="Add your comment here..."></textarea>
-                <button @click="sendComment">Send</button>
-            </div>
-        </div>
+<template>
+  <div :class="{'detail-main-section-wrapper': true, 'hidden': !isVisible}">
+    <div class="topbox">
+      <div :class="{'details': true, 'active': activeSection === 'details'}" @click="activeSection = 'details'">
+        <h4>Details</h4>
+      </div>
+      <div :class="{'comments': true, 'active': activeSection === 'comments'}" @click="activeSection = 'comments'">
+        <h4 @click="fetchComments">Comments</h4>
+      </div>
+      <img :src="cross" class="cross-icon" @click="hideDetail" />
     </div>
+    <div v-if="activeSection === 'details'">
+      <div class="detail-header">
+        <p>{{ file.name }}</p> <!-- display file name -->
+      </div>
+      <div class="img-section">
+        <img :src="file.url" /> <!-- display file image -->
+      </div>
+      <div class="access-section">
+        <p>Who has access</p>
+        <div class="all-access-data">
+          <!-- placeholder for access members -->
+        </div>
+        <div class="access-btn">
+          <button @click="showManageAccess = true">
+            <img :src="key" />
+            Manage access
+          </button>
+        </div>
+      </div>
+      <div class="file-details-section">
+        <div class="heading-file-detail">
+          <p>File Detail:</p>
+        </div>
+        <div class="file-detail">
+          <p><strong>Location</strong></p>
+          <p class="filedetails">{{ file.path }}</p> 
+          <p><strong>Type</strong></p>
+          <p class="filedetails">{{ file.mime }}</p> 
+          <p><strong>Size</strong></p>
+          <p class="filedetails">{{ formatSize(file.size) }}</p> 
+          <p><strong>Owner</strong></p>
+          <p class="filedetails">{{ file.user_name }}</p> 
+          <p><strong>Modified</strong></p>
+          <p class="filedetails">{{ formatDate(file.updated_at) }}</p> 
+          <p><strong>Created</strong></p>
+          <p class="filedetails">{{ formatDate(file.created_at) }}</p> 
+        </div>
+      </div>
+    </div>
+    <div v-else class="comments">
+      <div class="comments-section">
+        <textarea v-model="newComment" placeholder="Add your comment here..."></textarea>
+        <button @click="sendComment">Send</button>
+      </div>
+      <div v-if="comments.length > 0" class="comments-list">
+        <div v-for="comment in comments" :key="comment.id" class="comment">
+          <p>{{ comment.user.name }}: {{ comment.content }}</p>
+        </div>
+      </div>
+      <div v-else class="no-comments">
+        <p>No comments made or exist.</p>
+      </div>
+    </div>
+    <ManageAccess 
+      v-if="showManageAccess" 
+      :fileName="file.name" 
+      :showPopup="showManageAccess"
+      @close-popup="showManageAccess = false"
+    />
+  </div>
 </template>
 
 <script>
+import emitter from '../../eventbus.js';
+import ManageAccess from '../MiddleSection/ManageAccess.vue';
+
 export default {
-    name: 'RightSection',
-    data() {
-        return {
-            cross: require('../../assets/cross.png'),
-            dummyDetailImage: require('../../assets/dummyrecentImage.png'),
-            profile: require('../../assets/dummyProfile.png'),
-            key: require('../../assets/key.png'),
-            isVisible: false,
-            activeSection: 'details'
-        }
-    },
-    methods: {
-        hideDetail() {
-            this.isVisible = false;
-        },
-        sendComment() {
-            // Empty function to handle sending comments to the backend
-        }
+  name: 'RightSection',
+  components: {
+    ManageAccess
+  },
+  data() {
+    return {
+      cross: require('../../assets/cross.png'),
+      key: require('../../assets/key.png'),
+      isVisible: false,
+      activeSection: 'details',
+      showManageAccess: false,
+      newComment: '',
+      comments: [],
+      file: {} // initialize an empty object to hold file details
     }
-}
-</script> -->
-<template>
-    <div :class="{'detail-main-section-wrapper': true, 'hidden': !isVisible}">
-      <div class="topbox">
-        <div :class="{'details': true, 'active': activeSection === 'details'}" @click="activeSection = 'details'">
-          <h4>Details</h4>
-        </div>
-        <div :class="{'comments': true, 'active': activeSection === 'comments'}" @click="activeSection = 'comments'">
-          <h4>Comments</h4>
-        </div>
-        <img :src="cross" class="cross-icon" @click="hideDetail" />
-      </div>
-      <div v-if="activeSection === 'details'">
-        <div class="detail-header">
-          <p>sujal.jpg</p>
-        </div>
-        <div class="img-section">
-          <img :src="dummyDetailImage" />
-        </div>
-        <div class="access-section">
-          <p>Who has access</p>
-          <div class="all-access-data">
-            <img :src="profile" class="access-members" />
-            <img :src="profile" class="access-members" />
-          </div>
-          <div class="access-btn">
-            <button @click="showManageAccess = true">
-              <img :src="key" />
-              Manage access
-            </button>
-          </div>
-        </div>
-        <div class="file-details-section">
-          <div class="heading-file-detail">
-            <p>File Detail:</p>
-          </div>
-          <div class="file-detail">
-            <p><strong>Location</strong></p>
-            <p class="filedetails">My Files</p>
-            <p><strong>Type</strong></p>
-            <p  class="filedetails">Image</p>
-            <p><strong>Size</strong></p>
-            <p  class="filedetails">1.2MB</p>
-            <p><strong>Owner</strong></p>
-            <p  class="filedetails">Sujal</p>
-            <p><strong>Modified</strong></p>
-            <p class="filedetails">13 mar 2022 Sujal</p>
-            <p><strong>Created</strong></p>
-            <p>12 mar 2022</p>
-          </div>
-        </div>
-      </div>
-      <div v-else class="comments">
-        <div class="comments-section">
-          <textarea placeholder="Add your comment here..."></textarea>
-          <button @click="sendComment">Send</button>
-        </div>
-      </div>
-      <ManageAccess 
-        v-if="showManageAccess" 
-        :fileName="'sujal.jpg'" 
-        :showPopup="showManageAccess"
-        @close-popup="showManageAccess = false"
-      />
-    </div>
-  </template>
-  
-  <script>
-  import emitter from '../../eventbus.js';
-  import ManageAccess from '../MiddleSection/ManageAccess.vue';
-  
-  export default {
-    name: 'RightSection',
-    components: {
-      ManageAccess
+  },
+  created() {
+    emitter.on('showDetails', this.showDetail);
+    emitter.on('showDetails', this.getFileDetails);
+  },
+  beforeUnmount() {
+    emitter.off('showDetails', this.showDetail);
+    emitter.off('showDetails', this.getFileDetails);
+  },
+  methods: {
+    hideDetail() {
+      document.cookie = 'optionfileId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      this.isVisible = false;
     },
-    data() {
-      return {
-        cross: require('../../assets/cross.png'),
-        dummyDetailImage: require('../../assets/dummyrecentImage.png'),
-        profile: require('../../assets/dummyProfile.png'),
-        key: require('../../assets/key.png'),
-        isVisible: false,
-        activeSection: 'details',
-        showManageAccess: false
+    showDetail() {
+      this.isVisible = true;
+      this.activeSection = 'details';
+    },
+    async getFileDetails() {
+      const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+      const filefolderIdCookie = document.cookie.split('; ').find(row => row.startsWith('optionfileId='));
+      let fileId = null;
+      if (filefolderIdCookie) {
+        fileId = filefolderIdCookie.split('=')[1];
+      }
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/files/${fileId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          },
+        });
+        if (response.ok) {
+          this.file = await response.json(); // update file object with response data
+        } else {
+          console.error('Failed to get file details:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error getting file details:', error);
       }
     },
-    created() {
-      emitter.on('showDetails', this.showDetail);
+    formatSize(bytes) {
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+      if (bytes === 0) return '0 Byte';
+      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+      return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
     },
-    beforeUnmount() {
-      emitter.off('showDetails', this.showDetail);
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString(undefined, options);
     },
-    methods: {
-      hideDetail() {
-        this.isVisible = false;
-      },
-      showDetail() {
-        this.isVisible = true;
-        this.activeSection = 'details';
-      },
-      sendComment() {
-        // Empty function to handle sending comments to the backend
+    async sendComment() {
+      if (this.newComment.trim() === '') return;
+      const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+      const filefolderIdCookie = document.cookie.split('; ').find(row => row.startsWith('optionfileId='));
+      let fileId = null;
+      if (filefolderIdCookie) {
+        fileId = filefolderIdCookie.split('=')[1];
       }
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/files/${fileId}/comments`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            content: this.newComment,
+          }),
+        });
+        if (response.ok) {
+          this.newComment = '';
+          this.fetchComments();
+          document.cookie = 'folderId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        } else {
+          console.error('Failed to send comment:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error sending comment:', error);
+      }
+      document.cookie = 'folderId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    },
+    async fetchComments() {
+      const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+      const filefolderIdCookie = document.cookie.split('; ').find(row => row.startsWith('optionfileId='));
+      let fileId = null;
+      if (filefolderIdCookie) {
+        fileId = filefolderIdCookie.split('=')[1];
+      }
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/files/${fileId}/comments`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          this.comments = data.map(comment => ({
+            id: comment.id,
+            content: comment.content,
+            user: comment.user
+          }));
+          document.cookie = 'folderId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        } else {
+          console.error('Failed to fetch comments:', response.statusText);
+          this.comments = [];
+        }
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+        this.comments = [];
+      }
+      document.cookie = 'folderId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     }
   }
-  </script>
-  
+}
+</script>
+
 
 
 <style>
@@ -235,16 +262,21 @@ export default {
     padding: 0 20px;
     height: 3rem;
     box-shadow: 0 0.6px 0 grey;
-    border-radius: 0 0 0 10px;
 }
 .detail-header p {
     font-weight: 600;
 }
 .img-section {
-    height: 11rem;
+    height: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin:  10px;
+}
+.img-section img{
+  height: 100px;
+  margin: 10px;
+  border-radius: 10px;
 }
 .access-section {
     border-top: 0.2px solid grey;
@@ -261,19 +293,23 @@ export default {
 }
 .access-btn {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
 }
 .access-btn button {
     width: 10rem;
     height: 3rem;
     display: flex;
     align-items: center;
+    justify-content: center;
     font-size: 14px;
     font-weight: 600;
     gap: 4px;
     background-color: white;
     border: 1px solid #2e2e2e;
     color: #2e2e2e;
+    border-radius: 10px;
+    margin: 10px;
+    cursor: pointer;
 }
 .access-btn button:hover {
     background-color: #5f40db;

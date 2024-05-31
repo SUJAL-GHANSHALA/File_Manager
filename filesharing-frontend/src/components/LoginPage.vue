@@ -94,51 +94,6 @@ export default {
 };
 </script>
 
-<!-- <script> -->
-// import axios from 'axios';
-
-// export default {
-//     name: 'LoginPage',
-//     data(){
-//         return {
-//             email: '',
-//             password: '',
-//             // token: 'token_value_here'
-//         }
-//     },
-    // methods: {
-    //     async login() {
-    //         try {
-    //             const response = await axios.post("http://127.0.0.1:8000/api/login", {
-    //                 email: this.email,
-    //                 password: this.password
-    //             }, {
-    //                 headers: {
-    //                     "Accept": "application/json",
-    //                     // "Authorization": token
-    //                 }
-    //             });
-    //             if (response.status == 200) {
-    //                 alert("Login successful");
-    //                 this.$router.push({name:'Home'})
-    //             }
-    //         } catch (error) {
-    //             // Handle errors
-    //             console.error("Error occurred:", error);
-    //             alert("Login failed: " + error.message);
-    //         }
-    //     }
-    // },
-    // mounted() {
-        //in this function will try to user to redirect page after he successfully sign up
-        // let user = localStorage.getItem('user-info'); //this code is by you tuber(code step by step in vue project), just for understanding purpose,like when user logged, he should not visit the signup/signin again
-        // if(user){
-        //     this.$router.push({name:'Home'})
-        // }
-//     }
-// }
-
-
 <!-- css code here -->
 <style scoped>
 * {

@@ -43,8 +43,8 @@
         <div class="list-parent">
             <div>
                 <ul class="ul-list">
-                    <li><img src="../../assets/starframe.png" alt=""></li>
-                    <li><img src="../../assets/sharedframe.png" alt=""> </li>
+                    <li @click="handlestarclick"><img src="../../assets/starframe.png" alt=""></li>
+                    <li @click="handleShareWithMeClick"><img src="../../assets/sharedframe.png" alt=""> </li>
                     <li><img src="../../assets/statisticsframe.png" alt=""> </li>
                     <li><img src="../../assets/settingsframe.png" alt=""> </li>
                 </ul>
@@ -70,32 +70,77 @@
 <script >
     // import {bus} from '../../eventbus.js';
     // import { ref } from 'vue';
-    export default {
-        name: 'LeftSection',
-        data() {
-            return {
-                showStorageList: false
-            };
+    import emitter from '../../eventbus';
+
+export default {
+    name: 'LeftSection',
+    data() {
+        return {
+            showStorageList: false,
+        };
+    },
+    methods: {
+        handleShareWithMeClick() {
+            emitter.emit('share-with-me');
         },
-        methods: {
-            toggleStorageList() {
-                this.showStorageList = !this.showStorageList;
-            },
-            async handleFileUpload(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    try {
+        toggleStorageList() {
+            this.showStorageList = !this.showStorageList;
+        },
+        async handlestarclick() {
+            this.token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/files/starred', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + this.token
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    emitter.emit('starredFilesFetched', data);
+                } else {
+                    console.error('Failed to fetch starred files');
+                }
+            } catch (error) {
+                console.error('Error fetching starred files:', error);
+            }
+        },
+        async handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                try {
+
+                    this.token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+                    
+                    const filefolderIdCookie = document.cookie.split('; ').find(row => row.startsWith('filefolderid='));
+                    let folder_id = null;
+                    if (filefolderIdCookie) {
+                        folder_id = filefolderIdCookie.split('=')[1];
+                    }
+                
+                    // let formData = new FormData();
+                    // formData.append('file', file);
+                    // formData.append('folder_id',folder_id); 
+
                     let formData = new FormData();
                     formData.append('file', file);
-                    formData.append('folder_id', " " ); //folder id will be null
-                    
-                    let token = 'Bearer 1|GezUOhGwza1FcCulW6j3UsWq6EhayrL2v2tXlyLY7e0e92e1';
+
+                    if (folder_id !== null) {
+                        formData.append('folder_id', folder_id.toString()); // Make sure it's a string
+                    } else {
+                        console.error("Folder ID is null or undefined!");
+                    }
+
                     const response = await fetch('http://127.0.0.1:8000/api/files', {
                         method: 'POST',
                         headers: {
                             // 'Content-Type': 'application/json',
                             'Accept': '/*',
-                            'Authorization': token
+                            'Authorization': 'Bearer ' +this.token
                         },
                         body: formData
                     });
@@ -105,21 +150,22 @@
                     }
 
                     const data = await response.json();
-                    console.log('File uploaded successfully:', data);
-
-                    // Dispatch Vuex action to refresh the folder list
+                    alert('File uploaded successfully:', data);
+                    document.cookie = 'folderId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                    document.cookie = 'filefolderid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                    
+                    // dispatch vuex action to refresh the folder list
                     this.$store.dispatch('refreshFolderList');
-                    } catch (error) {
+                } catch (error) {
                     console.error('Error uploading file:', error);
-                    alert('Error uploading file: ' + error.message); // Provide user feedback
-                    }
-        }
-        },
-            toggleCreateFolder() {
-                this.$store.dispatch('toggleCreateFolderPopup');
+                }
             }
+        },
+        toggleCreateFolder() {
+            this.$store.dispatch('toggleCreateFolderPopup');
         }
     }
+}
 </script>
 
 <!-- css here -->

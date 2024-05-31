@@ -3,8 +3,8 @@ import { createStore } from 'vuex';
 const store = createStore({
   state: {
     showCreateFolderPopup: false,
-    showProfileDropdown: false, // Add state for profile dropdown
-    refreshFolderList: false // Add state to trigger folder list refresh
+    showProfileDropdown: false, 
+    refreshFolderList: false 
   },
   mutations: {
     toggleCreateFolderPopup(state) {
@@ -13,7 +13,7 @@ const store = createStore({
     hideCreateFolderPopup(state) {
       state.showCreateFolderPopup = false;
     },
-    toggleProfileDropdown(state) { // Mutation to toggle profile dropdown
+    toggleProfileDropdown(state) { 
       state.showProfileDropdown = !state.showProfileDropdown;
     },
     SET_REFRESH_FOLDER_LIST(state, value) {
@@ -27,7 +27,7 @@ const store = createStore({
     hideCreateFolderPopup({ commit }) {
       commit('hideCreateFolderPopup');
     },
-    toggleProfileDropdown({ commit }) { // Action to toggle profile dropdown
+    toggleProfileDropdown({ commit }) { 
       commit('toggleProfileDropdown');
     },
     refreshFolderList({ commit }) {

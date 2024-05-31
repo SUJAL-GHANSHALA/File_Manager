@@ -1,233 +1,75 @@
-<!-- <template>
-    <div class="middle-section widthhandle"> -->
-        <!-- nav bar starts -->
-        <!-- <div class="nav-bar">
-            <div class="mid-sec-left">
-                <img src="../../assets/middlesectionhard.png" alt="" class="mid-sec-left-img">
-                <h2>Storage</h2>
-            </div>
-
-            <div class="mid-sec-right">
-                <div class="mid-sec-right-left mid-sec-right-form">
-                    <form action="">
-                        <img src="../../assets/search.png" alt="" class="mid-sec-right-form-img">
-                        <input type="text" placeholder="Search here...">
-                    </form>
-                </div>
-                <div class="mid-sec-right-right">
-                    <div class="profile-logo">
-
-                    </div>
-                    <div class="profile-name">
-                        <p>Sujal</p>
-                    </div>
-                    <div class="profile-icon" @click="toggleProfileDropdown">
-                        <img src="../../assets/profileicon.png" alt="">
-                    </div> -->
-                    <!-- profile hidden starts -->
-                    <!-- <ProfileDropdown :isVisible="showProfileDropdown" /> -->
-                    <!-- profile hidden ends -->
-                <!-- </div>
-            </div>
-        </div> -->
-        <!-- nav-bar ends -->
-
-        <!-- recent section starts -->
-        <!-- <div class="cards">
-            <div class="recent">
-                <div class="recent-left">
-                    <h3>Recent</h3>
-                </div>
-                <div class="recent-new">
-                    <img src="../../assets/recentnew.png" alt="">
-                </div>
-            </div>
-            <div class="recent-wrapper">
-                <div class="recent-data-contents">
-                    <div class="recent-card-wrapper" v-for="(item, index) in recentItems" :key="index">
-                        <div class="card-upper-sec">
-                            <img :src="imageIcon" alt="image" />
-                            <p>{{ item.title }}</p>
-                        </div>
-                        <div class="card-lower-sec">
-                            <img :src="dummyImage" alt="DataImage" class="dataImage" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-
-        <!-- <div class="cards">
-            <div class="recent">
-                <div class="recent-left">
-                    <h3>Recent</h3>
-                </div>
-                <div class="recent-new">
-                    <img src="../../assets/recentnew.png" alt="">
-                </div>
-            </div>
-            <div class="recent-wrapper">
-                <div class="recent-data-contents" v-if="recentItems.length > 0">
-                    <div class="recent-card-wrapper" v-for="(item, index) in recentItems" :key="index">
-                        <div class="card-upper-sec">
-                            <img :src="item.type === 'folder' ? imageIcon : dummyImage" alt="image" />
-                            <p>{{ item.title }}</p>
-                        </div>
-                        <div class="card-lower-sec">
-                            <img :src="item.url || dummyImage" alt="DataImage" class="dataImage" />
-                        </div>
-                    </div>
-                </div>
-                <div v-else>
-                    <p>No recent files available</p>
-                </div>
-            </div>
-        </div> -->
-        <!-- recent section ends -->
-
-        <!-- <div class="myfiles">
-            <h3>My Files</h3>
-        </div>
-        <div class="table-section">
-            <div class="table">
-                <TablePage />
-            </div>
-        </div>
-    </div>
-    <CreateFolder v-if="showCreateFolderPopup" />
-    <ManageAccess :fileName="'sujal.mp3'" />
-    <RightSection />
-</template> -->
-
-
-<!-- <script> 
-// import emitter from '../../eventbus.js';
-
-// import ProfileDropdown  from './ProfileDropdown.vue';
-// import ManageAccess from './ManageAccess.vue';
-// import CreateFolder from './CreateFolder.vue';
-// import RightSection from '../RightSection/RightSection.vue';
-// import TablePage from './TablePage.vue';
-// import { mapState, mapActions } from 'vuex';
-
-
-// export default {
-//   name: "MiddleSection",
-//   components: {
-//         TablePage,
-//         RightSection,
-//         CreateFolder,
-//         ManageAccess,
-//         ProfileDropdown
-//     },
-//     data() {
-        // return {
-        //   plus02: require('../../assets/plus02.png'), 
-        // imageIcon: require('../../assets/imageIcon.png'), 
-        // dummyImage: require('../../assets/dummyrecentImage.png'), 
-        // recentItems: [
-        //     { title: 'sujal' },
-        //     { title: 'sujal' },
-        //     { title: 'sujal' },
-        //     { title: 'sujal' }
-        // ],
-//         recentItems: [] // Initialize recentItems as an empty array
-//         };
-//     },
-//     computed: {
-//         ...mapState(['showCreateFolderPopup', 'showProfileDropdown']), 
-//     },
-//     methods: {
-//         ...mapActions(['toggleProfileDropdown']),
-//         addRecentItem(item) {
-//             this.recentItems = [item, ...this.recentItems].slice(0, 4); // Keep only the 4 most recent items
-//         }
-//     },
-//     created() {
-//         emitter.on('file-accessed', this.addRecentItem); // Listen for the event
-//     },
-//     beforeUnmount() {
-//         emitter.off('file-accessed', this.addRecentItem); // Clean up the event listener
-//     }
-// };
-// </script>
--->
-
 <template>
-    <div class="middle-section widthhandle">
-      <!-- nav bar starts -->
-      <div class="nav-bar">
-        <div class="mid-sec-left">
-          <img src="../../assets/middlesectionhard.png" alt="" class="mid-sec-left-img">
-          <h2>Storage</h2>
-        </div>
-  
-        <div class="mid-sec-right">
-          <div class="mid-sec-right-left mid-sec-right-form">
-            <form action="">
-              <img src="../../assets/search.png" alt="" class="mid-sec-right-form-img">
-              <input type="text" placeholder="Search here...">
-            </form>
-          </div>
-          <div class="mid-sec-right-right">
-            <div class="profile-logo"></div>
-            <div class="profile-name">
-              <p>Sujal</p>
-            </div>
-            <div class="profile-icon" @click="toggleProfileDropdown">
-              <img src="../../assets/profileicon.png" alt="">
-            </div>
-            <!-- profile hidden starts -->
-            <ProfileDropdown :isVisible="showProfileDropdown" />
-            <!-- profile hidden ends -->
-          </div>
-        </div>
+  <div class="middle-section widthhandle">
+    <!-- nav bar starts -->
+    <div class="nav-bar">
+      <div class="mid-sec-left">
+        <img src="../../assets/middlesectionhard.png" alt="" class="mid-sec-left-img">
+        <h2>Storage</h2>
       </div>
-      <!-- nav-bar ends -->
-  
-      <!-- recent section starts -->
-      <div class="cards">
-        <div class="recent">
-          <div class="recent-left">
-            <h3>Recent</h3>
-          </div>
-          <div class="recent-new">
-            <img src="../../assets/recentnew.png" alt="">
-          </div>
+
+      <div class="mid-sec-right">
+        <div class="mid-sec-right-left mid-sec-right-form">
+          <form action="">
+            <img src="../../assets/search.png" alt="" class="mid-sec-right-form-img">
+            <input type="text" placeholder="Search here...">
+          </form>
         </div>
-        <div class="recent-wrapper">
-          <div class="recent-data-contents" v-if="recentItems.length > 0">
-            <div class="recent-card-wrapper" v-for="(item, index) in recentItems" :key="index">
-              <div class="card-upper-sec">
-                <img :src="getImageForItem(item)" alt="image" />
-                <h1>{{ item.title }}</h1>
-              </div>
-              <div class="card-lower-sec">
-                <img :src="dummyImage" alt="DataImage" class="dataImage" />
-              </div>
-            </div>
+        <div class="mid-sec-right-right">
+          <div class="profile-logo"><img src="../../assets/ShaneSujal.png" alt=""></div>
+
+          <div class="profile-icon" @click="toggleProfileDropdown">
+            <img src="../../assets/profileicon.png" alt="">
           </div>
-          <div v-else>
-            <p>No recent files available</p>
-          </div>
-        </div>
-      </div>
-      <!-- recent section ends -->
-  
-      <div class="myfiles">
-        <h3>My Files</h3>
-      </div>
-      <div class="table-section">
-        <div class="table">
-          <TablePage />
+          <!-- profile hidden starts -->
+          <ProfileDropdown :isVisible="showProfileDropdown" />
+          <!-- profile hidden ends -->
         </div>
       </div>
     </div>
-    <CreateFolder v-if="showCreateFolderPopup" />
-    <ManageAccess :fileName="'sujal.mp3'" />
-    <RightSection />
-  </template>
+    <!-- nav-bar ends -->
+
+    <!-- recent section starts -->
+    <div class="cards">
+      <div class="recent">
+        <div class="recent-left">
+          <h3>Recent</h3>
+        </div>
+        <!-- <div class="recent-new">
+          <img src="../../assets/recentnew.png" alt="">
+        </div> -->
+      </div>
+      <div class="recent-wrapper">
+        <div class="recent-data-contents" v-if="recentItems.length > 0">
+          <div class="recent-card-wrapper" v-for="(item, index) in recentItems" :key="index">
+            <div class="card-upper-sec">
+              <img :src="item.url" :alt="item.title" class="dataImagetitle" />
+              <p>{{ item.title }}</p>
+            </div>
+            <div class="card-lower-sec">
+              <img :src="item.url" alt="DataImage" class="dataImage" />
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <div class="no-files">No Recent File Available</div>
+        </div>
+      </div>
+    </div>
+    <!-- recent section ends -->
+
+    <div class="myfiles">
+      <h3>My Files</h3>
+    </div>
+    <div class="table-section">
+      <div class="table">
+        <TablePage />
+      </div>
+    </div>
+  </div>
+  <CreateFolder v-if="showCreateFolderPopup" />
+  <ManageAccess :fileName="'sujal.mp3'" />
+  <RightSection />
+</template>
   
   <script>
   import emitter from '../../eventbus.js';
@@ -249,9 +91,7 @@
     },
     data() {
       return {
-        imageIcon: require('../../assets/imageIcon.png'), 
-        dummyImage: require('../../assets/imageIcon.png'), 
-        recentItems: [] // Initialize recentItems as an empty array
+        recentItems: [] 
       };
     },
     computed: {
@@ -260,44 +100,55 @@
     methods: {
       ...mapActions(['toggleProfileDropdown']),
       addRecentItem(item) {
-        this.recentItems = [item, ...this.recentItems].slice(0, 4); // Keep only the 4 most recent items
+        console.log(item);
+        this.recentItems = [item, ...this.recentItems].slice(0, 4);
       },
       getImageForItem(item) {
-        // Determine the appropriate image based on the file extension or type
+        
         if (item.type === 'folder') {
           return this.imageIcon;
         } else if (item.extension === 'docx') {
-          return require('../../assets/imageIcon.png'); // Add appropriate icon for docx files
+          return require('../../assets/dummyProfile.png'); 
         } else if (item.extension === 'pdf') {
-          return require('../../assets/imageIcon.png'); // Add appropriate icon for pdf files
+          return require('../../assets/imageIcon.png'); 
         }
-        // Add more conditions as needed for other file types
-        return this.dummyImage; // Default image
+
+        return this.dummyImage; 
       }
     },
     created() {
-      emitter.on('file-accessed', this.addRecentItem); // Listen for the event
+      emitter.on('file-accessed', this.addRecentItem); 
     },
     beforeUnmount() {
-      emitter.off('file-accessed', this.addRecentItem); // Clean up the event listener
+      emitter.off('file-accessed', this.addRecentItem); 
     }
   };
   </script>
-  
-  <style>
-  /* Your styles */
-  </style>
-  
-
 
 <style>
+    .dataImagetitle{
+      height: 20px;
+      width: 30px;
+    }
+    .dataImage{
+      height: 120px;
+      width: 250px;
+    }
+    .card-upper-sec{
+      height: 20px;
+      width: 30px;
+      margin-bottom: 5px;
+    }
+    .card-lower-sec{
+      height: 80px;
+      width: 230px;
+    }
     .middle-section {
     /* border: 1px solid red; */
     width: 65%;
     height: 100vh;
     font-family: sans-serif;
     }
-
     /* nav-bar starts */
     .nav-bar{
         height: 60px;
@@ -364,11 +215,17 @@
         justify-content: space-between;
     }
     .profile-logo{
-        height: 35px;
-        width: 35px;
+        height: 36px;
+        width: 36px;
         border-radius: 20px;
-        border: 1px solid black;
+        /* border: 1px solid black; */
         cursor: pointer;
+        position: relative;
+        left: 50px;
+    }
+    .profile-logo img {
+      height: 36px;
+      width: 36px;
     }
     .profile-name p{
         font-size: 17px;
@@ -478,5 +335,31 @@
     .widthhandle{
         width: 80%;
     }
+    .no-files {
+      margin-top: 10px;
+      height: 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f9f9f9;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      color: #666;
+      text-align: center;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .no-files::before {
+      content: "😞";
+      font-size: 36px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .no-files:hover {
+      background-color: #f2f2f2;
+    }
+
 
 </style>
