@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/folders', [FolderController::class, 'index']); // list all folders
     Route::delete('/folders/{folder}', [FolderController::class, 'destroy']); // delete folder
 
-   
+   //getting contents of folders
     Route::get('/folders/root/contents', [FolderController::class, 'fetchRootContents']);
     Route::get('/folders/{folder}/contents', [FolderController::class, 'fetchContents']);
 
@@ -47,11 +47,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/files/{file}', [FileController::class, 'destroy']); // delete file
     Route::get('/files/{file}', [FileController::class, 'show']); // show file details
     Route::get('/files', [FileController::class, 'index']); // list all files
+    Route::put('/files/{file}/rename', [FileController::class, 'rename']);  // Rename file route
+    Route::post('/files/search', [FileController::class, 'search']);  //search file routes
+    Route::post('/files/{file}/move', [FileController::class, 'move']); // movin a file route/
+    Route::put('/files/{file}/star', [FileController::class, 'toggleStarred']); // add star route
+    Route::post('/files/starred', [FileController::class, 'getStarredFiles']); //get starred files
 
+    //file share routes
     Route::post('/file-share', [FileShareController::class, 'store']);
     Route::get('/shared-with-me', [FileShareController::class, 'sharedWithMe']);
-    Route::post('/files/{file}/generate-link', [FileShareController::class, 'generateLink']);
-    Route::get('/shared-file/{token}', [FileShareController::class, 'accessSharedFile']);
 
     //comments routes
     Route::post('/files/{file}/comments', [CommentController::class, 'store']);

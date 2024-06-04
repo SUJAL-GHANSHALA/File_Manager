@@ -76,7 +76,7 @@ export default {
     name: 'LeftSection',
     data() {
         return {
-            showStorageList: false,
+            showStorageList: false
         };
     },
     methods: {
@@ -87,26 +87,25 @@ export default {
             this.showStorageList = !this.showStorageList;
         },
         async handlestarclick() {
-            this.token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+            const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/files/starred', {
+                const response = await fetch(`http://127.0.0.1:8000/api/files/starred`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + this.token
-                    }
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
                 });
-
                 if (response.ok) {
                     const data = await response.json();
                     emitter.emit('starredFilesFetched', data);
                 } else {
-                    console.error('Failed to fetch starred files');
+                    console.error('Failed to get starred files', response.statusText);
                 }
             } catch (error) {
-                console.error('Error fetching starred files:', error);
+                console.error('Error getting starred files:', error);
             }
         },
         async handleFileUpload(event) {

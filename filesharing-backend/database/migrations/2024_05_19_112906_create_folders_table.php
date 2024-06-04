@@ -14,13 +14,13 @@ class CreateFoldersTable extends Migration
     public function up()
     {
         Schema::create('folders', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->unsignedBigInteger('user_id');
-            $table->string('path')->nullable();
-            $table->unsignedBigInteger('parent_id')->nullable();
-            $table->integer('nesting_level')->default(1);
-            $table->timestamps();
+            $table->id(); // Auto-incrementing primary key
+            $table->string('name'); // Name of the folder
+            $table->unsignedBigInteger('user_id'); // Foreign key referencing users table
+            $table->string('path')->nullable(); // Path of the folder, can be null
+            $table->unsignedBigInteger('parent_id')->nullable(); // Foreign key referencing parent folder, can be null
+            $table->integer('nesting_level')->default(1); // Nesting level, default is 1
+            $table->timestamps(); // Created_at and updated_at timestamps
 
             // Foreign key constraints
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -35,6 +35,6 @@ class CreateFoldersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('folders');
+        Schema::dropIfExists('folders'); // Drop the folders table if it exists
     }
 }

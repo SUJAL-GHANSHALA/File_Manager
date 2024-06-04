@@ -96,12 +96,14 @@ export default {
   },
   mounted() {
     this.fetchDataForRootFolder();
-    emitter.on('share-with-me', this.fetchDataForSharedWithMe);
-    emitter.on('starredFilesFetched', this.updateStarredFiles); 
+    emitter.on('share-with-me', this.fetchDataForSharedWithMe); 
+    emitter.on('starredFilesFetched', this.updateStarredFiles);
+    emitter.on('searchedFiles', this.fetchSearchFiles);
   },
   beforeMount() {
     emitter.off('share-with-me', this.fetchDataForSharedWithMe); 
     emitter.off('starredFilesFetched', this.updateStarredFiles);
+    emitter.on('searchedFiles', this.fetchSearchFiles);
   },
 
   watch: {
@@ -332,6 +334,9 @@ export default {
     },
     updateStarredFiles(data) {
         this.assets = { files: data, folders: [] };
+    },
+    fetchSearchFiles(data) {
+      this.assets = { files: data, folders: [] };
     }
   }
 };

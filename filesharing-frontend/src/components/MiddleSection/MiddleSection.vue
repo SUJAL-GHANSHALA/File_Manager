@@ -9,9 +9,11 @@
 
       <div class="mid-sec-right">
         <div class="mid-sec-right-left mid-sec-right-form">
-          <form action="">
-            <img src="../../assets/search.png" alt="" class="mid-sec-right-form-img">
-            <input type="text" placeholder="Search here...">
+          <form @submit.prevent="search">
+            <button type="submit" class="search-button">
+              <img src="../../assets/search.png" alt="Search" class="search-icon">
+            </button>
+            <input type="search" v-model="searchInput" placeholder="Search here...">
           </form>
         </div>
         <div class="mid-sec-right-right">
@@ -91,6 +93,7 @@
     },
     data() {
       return {
+        searchInput: '',
         recentItems: [] 
       };
     },
@@ -114,6 +117,31 @@
         }
 
         return this.dummyImage; 
+      },
+      async search() {
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/api/files/search`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              query: this.searchInput
+            })
+          });
+          if (response.ok) {
+            const data = await response.json();
+            emitter.emit('searchedFiles', data);
+          } else {
+            alert("No files found for the given query.");
+          }
+        } catch (error) {
+          console.error('Error getting search files:', error);
+        }
       }
     },
     created() {
@@ -361,5 +389,17 @@
       background-color: #f2f2f2;
     }
 
+    .search-button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 4px;
+    }
+    
+    .search-icon {
+      width: 24px;
+      height: 24px;
+    }
 
 </style>

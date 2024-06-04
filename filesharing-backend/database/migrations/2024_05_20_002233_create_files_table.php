@@ -14,17 +14,19 @@ class CreateFilesTable extends Migration
     public function up()
     {
         Schema::create('files', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('extension');
-            $table->unsignedBigInteger('size');
-            $table->string('mime');
-            $table->string('path'); // path in the filesystem
-            $table->string('location'); // actual location on the server
-            $table->unsignedBigInteger('folder_id')->nullable();
-            $table->unsignedBigInteger('user_id');
-            $table->timestamps();
+            $table->id(); // Auto-incrementing primary key
+            $table->string('name'); // Name of the file
+            $table->string('extension'); // File extension (e.g., .jpg, .pdf)
+            $table->unsignedBigInteger('size'); // File size in bytes
+            $table->string('mime'); // MIME type of the file (e.g., image/jpeg)
+            $table->string('path'); // Path where the file is stored
+            $table->string('location'); // Location of the file, can be a URL or a local path
+            $table->unsignedBigInteger('folder_id')->nullable(); // Foreign key referencing folders table, can be null
+            $table->unsignedBigInteger('user_id'); // Foreign key referencing users table
+            $table->boolean('is_starred')->default(false); // Boolean indicating if the file is starred
+            $table->timestamps(); // Created_at and updated_at timestamps
 
+            // Foreign key constraints
             $table->foreign('folder_id')->references('id')->on('folders')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
@@ -37,6 +39,6 @@ class CreateFilesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('files');
+        Schema::dropIfExists('files'); // Drop the files table if it exists
     }
 }
